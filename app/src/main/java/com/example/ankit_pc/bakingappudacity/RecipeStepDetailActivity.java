@@ -8,12 +8,14 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.util.Util;
 
 import java.util.ArrayList;
 
@@ -43,23 +45,26 @@ public class RecipeStepDetailActivity extends AppCompatActivity {
     @Nullable
     @BindView(R.id.nextButton)  Button nextButton;
    // SimpleExoPlayerView viewExoPlayer;
-    long currentPosition;
+    long currentPosition=00;
     boolean dplayWhenReady = true;
+    boolean twoPane=false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.v("EnteredinDetail","onCreate");
         setContentView(R.layout.recipe_step_detail_activity);
         ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
        // viewExoPlayer = (SimpleExoPlayerView) findViewById(R.id.videoPlayerFullscreen);
-        if (savedInstanceState != null) {
-            currentPosition = savedInstanceState.getLong("current");
-            dplayWhenReady = savedInstanceState.getBoolean("state");
-        }
+       /* if (savedInstanceState != null) {
+           // currentPosition = savedInstanceState.getLong("current");
+            //dplayWhenReady = savedInstanceState.getBoolean("ready");
+            step = savedInstanceState.getParcelable(RecipeStepDetailFragment.ARG_STEP);
+        }*/
         //prevButton = (Button) findViewById(R.id.previousButton);
         //nextButton = (Button) findViewById(R.id.nextButton);
 
@@ -77,9 +82,12 @@ public class RecipeStepDetailActivity extends AppCompatActivity {
             if (intent.hasExtra(RecipeStepDetailFragment.ARG_STEP))
                 step = getIntent().getParcelableExtra(RecipeStepDetailFragment.ARG_STEP);
         } else {
+            Log.v("EnteredinDetail","SavedInstancehasvalue in onCreate");
             step = savedInstanceState.getParcelable(RecipeStepDetailFragment.ARG_STEP);
             recipes = savedInstanceState.getParcelableArrayList(RecipesMainFragment.TAG_RECIPES);
             recipe = savedInstanceState.getParcelable(RecipeStepListActivity.TAG_RECIPE);
+           // currentPosition = savedInstanceState.getLong("current");
+            //dplayWhenReady = savedInstanceState.getBoolean("state");
         }
 
 
@@ -90,9 +98,11 @@ public class RecipeStepDetailActivity extends AppCompatActivity {
         }*/
             //     startFullscreen(currentPosition);
         //} else {
+        Log.v("Detailcurrent",Long.toString(currentPosition));
+
         if (step != null) {
-            ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
-            ExoPlayerVideoHandler.getInstance().play();
+            //ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
+            //ExoPlayerVideoHandler.getInstance().play();
             checkPrevNext();
             changeFragment();
         }
@@ -150,8 +160,9 @@ public class RecipeStepDetailActivity extends AppCompatActivity {
     private void changeFragment(){
         Bundle arguments = new Bundle();
         arguments.putParcelable(RecipeStepDetailFragment.ARG_STEP, step);
-        arguments.putLong("current",currentPosition);
-        arguments.putBoolean("state",dplayWhenReady);
+        arguments.putBoolean("pane",twoPane);
+        //arguments.putLong("current",currentPosition);
+        //arguments.putBoolean("state",dplayWhenReady);
         fragment = new RecipeStepDetailFragment();
         fragment.setArguments(arguments);
         getSupportFragmentManager().beginTransaction()
@@ -193,9 +204,9 @@ public class RecipeStepDetailActivity extends AppCompatActivity {
     @OnClick(R.id.previousButton)
     void previousStep(View view){
         step = prevStep;
-        currentPosition = 00;
-        dplayWhenReady = true;
-        ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
+        //currentPosition = 00;
+        //dplayWhenReady = true;
+        //ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
        // ExoPlayerVideoHandler.getInstance().play();
         //currentPosition = ExoPlayerVideoHandler.getInstance().getPlayer().getCurrentPosition();
         checkPrevNext();
@@ -205,36 +216,39 @@ public class RecipeStepDetailActivity extends AppCompatActivity {
     @OnClick(R.id.nextButton)
     void nextStep(View view){
         step = nextStep;
-        currentPosition = 00;
-        dplayWhenReady = true;
-        ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
+        //currentPosition = 00;
+        //dplayWhenReady = true;
+        //ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
        // ExoPlayerVideoHandler.getInstance().play();
         //currentPosition = ExoPlayerVideoHandler.getInstance().getPlayer().getCurrentPosition();
         checkPrevNext();
         changeFragment();
     }
 
-    @Override
+/*    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        currentPosition = ExoPlayerVideoHandler.getInstance().getPlayer().getCurrentPosition();
-        dplayWhenReady = ExoPlayerVideoHandler.getInstance().getPlayer().getPlayWhenReady();
+        //currentPosition = ExoPlayerVideoHandler.getInstance().getPlayer().getCurrentPosition();
+        //dplayWhenReady = ExoPlayerVideoHandler.getInstance().getPlayer().getPlayWhenReady();
+        Log.v("EnteredinDetail","onSavedInstance");
+        Log.v("DetailCurrentonSaved",Long.toString(currentPosition));
         outState.putParcelable(RecipeStepListActivity.TAG_RECIPE, recipe);
         outState.putParcelableArrayList(RecipesMainFragment.TAG_RECIPES, recipes);
         outState.putParcelable(RecipeStepDetailFragment.ARG_STEP, step);
         outState.putBoolean("state",dplayWhenReady);
         outState.putLong("current",currentPosition);
-    }
+    }*/
 
-    @Override
+/*    @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        Log.v("EnteredinDetail","onRestoreInstanceState");
         step = savedInstanceState.getParcelable(RecipeStepDetailFragment.ARG_STEP);
         recipes = savedInstanceState.getParcelableArrayList(RecipesMainFragment.TAG_RECIPES);
         recipe = savedInstanceState.getParcelable(RecipeStepListActivity.TAG_RECIPE);
         currentPosition = savedInstanceState.getLong("current");
         dplayWhenReady = savedInstanceState.getBoolean("state");
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -249,30 +263,46 @@ public class RecipeStepDetailActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
+/*
     @Override
-    protected void onStop() {
+    public void onStop() {
+
+        Log.v("EnteredinDetail","onStop");
+        if(Util.SDK_INT > 23) {
+            Log.v("EnteredinDetail","SDK greater than 23");
+            currentPosition = ExoPlayerVideoHandler.getInstance().getPlayer().getCurrentPosition();
+            dplayWhenReady = ExoPlayerVideoHandler.getInstance().getPlayer().getPlayWhenReady();
+            ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
+        }
         super.onStop();
-        ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
-    }
+    }*/
 
 /*    @Override
     public void onPause() {
         super.onPause();
-       // ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
-        ExoPlayerVideoHandler.getInstance().goToBackground();
+        Log.v("EnteredinDetail", "onPause");
+        if(Util.SDK_INT <= 23)
+        {
+            Log.v("EnteredinDetail","SDK less than 23");
+            currentPosition = ExoPlayerVideoHandler.getInstance().getPlayer().getCurrentPosition();
+            Log.v("EnteredinDetailPause",Long.toString(currentPosition));
+            dplayWhenReady = ExoPlayerVideoHandler.getInstance().getPlayer().getPlayWhenReady();
+           // Log.v("On PauseCurrent",Long.toString(currentPosition));
+            //ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
+        }
     }*/
 
-    @Override
+   /* @Override
     protected void onResume() {
         super.onResume();
-        if (ExoPlayerVideoHandler.getInstance().getPlayer() != null)
-        {
 
+        if(Util.SDK_INT <= 23 ) {
 
-            ExoPlayerVideoHandler.getInstance().getPlayer().seekTo(currentPosition);
-            ExoPlayerVideoHandler.getInstance().getPlayer().setPlayWhenReady(dplayWhenReady);
-
+            Log.v("DetailonResume", Long.toString(currentPosition));
+            checkPrevNext();
+            changeFragment();
         }
-    }
+
+
+    }*/
 }
