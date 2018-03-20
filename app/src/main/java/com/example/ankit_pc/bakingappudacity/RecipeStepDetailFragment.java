@@ -50,8 +50,11 @@ public class RecipeStepDetailFragment extends android.support.v4.app.Fragment {
     public void onSaveInstanceState(Bundle outState) {
 
         Log.v("EnteredinDetailFragment","onSavedInstance");
-        //currentPosition = ExoPlayerVideoHandler.getInstance().getPlayer().getCurrentPosition();
-        //playWhenReady = ExoPlayerVideoHandler.getInstance().getPlayer().getPlayWhenReady();
+        if (Util.SDK_INT > 23){
+            currentPosition = ExoPlayerVideoHandler.getInstance().getPlayer().getCurrentPosition();
+            playWhenReady = ExoPlayerVideoHandler.getInstance().getPlayer().getPlayWhenReady();
+        }
+
         outState.putLong("current",currentPosition);
         outState.putParcelable(RecipeStepDetailFragment.ARG_STEP, step);
         super.onSaveInstanceState(outState);
